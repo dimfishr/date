@@ -143,13 +143,20 @@ assert(d:fmt('%T') == d:fmt("%H:%M:%S"))	-- 24-hour time, from 00:00:00 (06:55:1
 assert(d:fmt('%a %A %b %B') == "Tue Tuesday Oct October")
 assert(d:fmt('%C %d') == "15 05", d:fmt('%C %d'))
 
-print(d:fmt[[
+assert(d:fmt[[
 ${iso} -- iso
 ${http} -- http
 ${ctime} -- ctime
 ${rfc850} -- rfc850
 ${rfc1123} -- rfc1123
 ${asctime} -- asctime
+]] == [[
+1582-10-05T00:00:00 -- iso
+Tue, 05 Oct 1582 00:00:00 GMT -- http
+Tue Oct 05 00:00:00 GMT 1582 -- ctime
+Tuesday, 05-Oct-82 00:00:00 GMT -- rfc850
+Tue, 05 Oct 1582 00:00:00 GMT -- rfc1123
+Tue Oct 05 00:00:00 1582 -- asctime
 ]])
 
 -- Prints the current date and time, including time zone

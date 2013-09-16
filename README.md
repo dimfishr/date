@@ -1,6 +1,6 @@
 #LuaDate v2.1
 
-Lua Date and Time module for Lua 5.x.
+Lua Date and Time module for Lua 5.1/5.2
 
 ##Features:
 
@@ -14,5 +14,5 @@ Lua Date and Time module for Lua 5.x.
   
 ##Changes:
 
-- v2.1 Lua 5.2 support. Global 'date' will no longer be set.
+- v2.1 Several fixes for Lua 5.2 support. Global 'date' will no longer be set.
 - v2.0 original by Jas Latrix
