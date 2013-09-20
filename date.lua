@@ -419,6 +419,9 @@
     self.daynum, self.dayfrc = dn + floor(df/TICKSPERDAY), mod(df, TICKSPERDAY)
     return (dn >= DAYNUM_MIN and dn <= DAYNUM_MAX) and self or error("date beyond imposed limits:"..self)
   end
+  --- Gets the date from a date object.  
+  -- @return 3 return values; year, month, day  
+  -- @example local y, m, d = MyDate:getdate()  
   function dobj:getdate()  local y, m, d = breakdaynum(self.daynum) return y, m+1, d end
   function dobj:gettime()  return breakdayfrc(self.dayfrc) end
 
