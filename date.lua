@@ -87,7 +87,7 @@
   }
   local sl_months_lang = {
     en = {"January","February","March","April","May","June","July","August","September","October","November","December"},
-    ru = {"Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"},
+    ru = {"Января","Февраля","Марта","Апреля","Мая","Июня","Июля","Августа","Сентября","Октября","Ноября","Декабря"},
   }
   local sl_weekdays = sl_weekdays_lang.en
   local sl_months = sl_months_lang.en
