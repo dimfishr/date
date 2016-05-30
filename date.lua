@@ -554,7 +554,7 @@
     -- Full weekday name (Sunday)
     ['%A']=function(self) return sl_weekdays[weekday(self.daynum)+1] end,
     -- Abbreviated month name (Dec)
-    ['%b']=function(self) return sl_months[self:getmonth()] end,
+    ['%b']=function(self) return sl_months[self:getmonth()]:sub(1,3) end,
     -- Full month name (December)
     ['%B']=function(self) return sl_months[self:getmonth()] end,
     -- Year/100 (19, 20, 30)
