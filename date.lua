@@ -63,32 +63,36 @@
     local sl = len(str)
     if sl < (ml or 0) then return nil end
     str = lwr(str)
-    for k, v in pairs(tbl) do
-      if str == lwr(sub(v, 1, sl)) then
-        if tn then tn[0] = k end
-        return k
+    for k=1,#tbl do
+      if str == lwr(sub(tbl[k], 1, sl)) then
+        if tn then tn[0] = k-1 end
+        return k-1
       end
+    end
+  end
+  local function inlist_lang(str, tbl_lang, ml, tn)
+    local result
+    for l,tbl in pairs(tbl_lang) do
+      result = inlist(str, tbl, ml, tn)
+      if result then return result end
     end
   end
   local function fnil() end
   local function fret(x)return x;end
 --[[ DATE FUNCTIONS ]]--
   local DATE_EPOCH -- to be set later
-  local sl_weekdays = {
-    [0]="Sunday",[1]="Monday",[2]="Tuesday",[3]="Wednesday",[4]="Thursday",[5]="Friday",[6]="Saturday",
-    [7]="Sun",[8]="Mon",[9]="Tue",[10]="Wed",[11]="Thu",[12]="Fri",[13]="Sat",
+  local sl_weekdays_lang = {
+    en = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
+    ru = {"Воскресенье", "Понедельник", "Вторник", "Cреда", "Четверг", "Пятница", "Суббота"},
   }
+  local sl_months_lang = {
+    en = {"January","February","March","April","May","June","July","August","September","October","November","December"},
+    ru = {"Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"},
+  }
+  local sl_weekdays = sl_weekdays_lang.en
+  local sl_months = sl_months_lang.en
+
   local sl_meridian = {[-1]="AM", [1]="PM"}
-  local sl_months = {
-    [00]="January", [01]="February", [02]="March",
-    [03]="April",   [04]="May",      [05]="June",
-    [06]="July",    [07]="August",   [08]="September",
-    [09]="October", [10]="November", [11]="December",
-    [12]="Jan", [13]="Feb", [14]="Mar",
-    [15]="Apr", [16]="May", [17]="Jun",
-    [18]="Jul", [19]="Aug", [20]="Sep",
-    [21]="Oct", [22]="Nov", [23]="Dec",
-  }
   -- added the '.2'  to avoid collision, use `fix` to remove
   local sl_timezone = {
     [000]="utc",    [0.2]="gmt",
@@ -162,7 +166,7 @@
   -- parse v as a month
   local function getmontharg(v)
     local m = tonumber(v);
-    return (m and fix(m - 1)) or inlist(tostring(v) or "", sl_months, 2)
+    return (m and fix(m - 1)) or inlist_lang(tostring(v) or "", sl_months_lang, 2)
   end
   -- get daynum of isoweek one of year y
   local function isow1(y)
@@ -345,13 +349,13 @@
           end
         elseif sw("^(%a+)[/\\%s,-]?%s*") then --print("$Words")
           x = sw[1]
-          if inlist(x, sl_months,   2, sw) then
+          if inlist_lang(x, sl_months_lang, 2, sw) then
             if m and (not d) and (not y) then d, m = m, false end
             setm(mod(sw[0],12)+1)
           elseif inlist(x, sl_timezone, 2, sw) then
             c = fix(sw[0]) -- ignore gmt and utc
             if c ~= 0 then setz(c, x) end
-          elseif inlist(x, sl_weekdays, 2, sw) then
+          elseif inlist_lang(x, sl_weekdays_lang, 2, sw) then
             k = sw[0]
           else
             sw:back()
@@ -546,13 +550,13 @@
   function dobj:addticks(n)  return dobj_adddayfrc(self,n,1,TICKSPERDAY) end
   local tvspec = {
     -- Abbreviated weekday name (Sun)
-    ['%a']=function(self) return sl_weekdays[weekday(self.daynum) + 7] end,
+    ['%a']=function(self) return sl_weekdays[weekday(self.daynum)+1]:sub(1,3) end,
     -- Full weekday name (Sunday)
-    ['%A']=function(self) return sl_weekdays[weekday(self.daynum)] end,
+    ['%A']=function(self) return sl_weekdays[weekday(self.daynum)+1] end,
     -- Abbreviated month name (Dec)
-    ['%b']=function(self) return sl_months[self:getmonth() - 1 + 12] end,
+    ['%b']=function(self) return sl_months[self:getmonth()] end,
     -- Full month name (December)
-    ['%B']=function(self) return sl_months[self:getmonth() - 1] end,
+    ['%B']=function(self) return sl_months[self:getmonth()] end,
     -- Year/100 (19, 20, 30)
     ['%C']=function(self) return fmt("%.2d", fix(self:getyear()/100)) end,
     -- The day of the month as a number (range 1 - 31)
@@ -633,9 +637,19 @@
     -- asctime format, same as "%a %b %d %T %Y"
     ['${asctime}'] = function(self) return self:fmt0("%a %b %d %T %Y") end,
   }
+  function dobj:setlocale(l)
+    sl_weekdays = sl_weekdays_lang[l]
+    sl_months = sl_months_lang[l]
+  end
   function dobj:fmt0(str) return (gsub(str, "%%[%a%%\b\f]", function(x) local f = tvspec[x];return (f and f(self)) or x end)) end
   function dobj:fmt(str)
     str = str or self.fmtstr or fmtstr
+    if str:find("${ru}") then
+      str = str:gsub("${ru}","")
+      dobj:setlocale('ru')
+    else
+      dobj:setlocale('en')
+    end
     return self:fmt0((gmatch(str, "${%w+}")) and (gsub(str, "${%w+}", function(x)local f=tvspec[x];return (f and f(self)) or x end)) or str)
   end
 
