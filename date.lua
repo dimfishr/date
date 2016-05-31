@@ -83,7 +83,7 @@
   local DATE_EPOCH -- to be set later
   local sl_weekdays_lang = {
     en = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
-    ru = {"Воскресенье", "Понедельник", "Вторник", "Cреда", "Четверг", "Пятница", "Суббота"},
+    ru = {"Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"},
   }
   local sl_months_lang = {
     en = {"January","February","March","April","May","June","July","August","September","October","November","December"},
