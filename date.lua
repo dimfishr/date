@@ -63,10 +63,10 @@
     local sl = len(str)
     if sl < (ml or 0) then return nil end
     str = lwr(str)
-    for k=1,#tbl do
-      if str == lwr(sub(tbl[k], 1, sl)) then
-        if tn then tn[0] = k-1 end
-        return k-1
+    for k, v in pairs(tbl) do
+      if str == lwr(sub(v, 1, sl)) then
+        if tn then tn[0] = k end
+        return k
       end
     end
   end
@@ -82,12 +82,12 @@
 --[[ DATE FUNCTIONS ]]--
   local DATE_EPOCH -- to be set later
   local sl_weekdays_lang = {
-    en = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
-    ru = {"Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"},
+    en = {[0]="Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
+    ru = {[0]="Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"},
   }
   local sl_months_lang = {
-    en = {"January","February","March","April","May","June","July","August","September","October","November","December"},
-    ru = {"Января","Февраля","Марта","Апреля","Мая","Июня","Июля","Августа","Сентября","Октября","Ноября","Декабря"},
+    en = {[0]="January","February","March","April","May","June","July","August","September","October","November","December"},
+    ru = {[0]="Января","Февраля","Марта","Апреля","Мая","Июня","Июля","Августа","Сентября","Октября","Ноября","Декабря"},
   }
   local sl_weekdays = sl_weekdays_lang.en
   local sl_months = sl_months_lang.en
@@ -550,13 +550,13 @@
   function dobj:addticks(n)  return dobj_adddayfrc(self,n,1,TICKSPERDAY) end
   local tvspec = {
     -- Abbreviated weekday name (Sun)
-    ['%a']=function(self) return sl_weekdays[weekday(self.daynum)+1]:sub(1,3) end,
+    ['%a']=function(self) return sl_weekdays[weekday(self.daynum)]:sub(1,3) end,
     -- Full weekday name (Sunday)
-    ['%A']=function(self) return sl_weekdays[weekday(self.daynum)+1] end,
+    ['%A']=function(self) return sl_weekdays[weekday(self.daynum)] end,
     -- Abbreviated month name (Dec)
-    ['%b']=function(self) return sl_months[self:getmonth()]:sub(1,3) end,
+    ['%b']=function(self) return sl_months[self:getmonth()-1]:sub(1,3) end,
     -- Full month name (December)
-    ['%B']=function(self) return sl_months[self:getmonth()] end,
+    ['%B']=function(self) return sl_months[self:getmonth()-1] end,
     -- Year/100 (19, 20, 30)
     ['%C']=function(self) return fmt("%.2d", fix(self:getyear()/100)) end,
     -- The day of the month as a number (range 1 - 31)
